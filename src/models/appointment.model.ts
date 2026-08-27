@@ -41,10 +41,8 @@ const appointmentSchema = new Schema({
         type: String,
         trim: true,
     }
-},
-    {
-        timestamps: true
-    });
+}
+);
 
 export type IAppointment = InferSchemaType<typeof appointmentSchema>;
 export type AppointmentDocument = HydratedDocumentFromSchema<typeof appointmentSchema>;
