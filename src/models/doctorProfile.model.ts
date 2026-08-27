@@ -1,7 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 
-const doctorProfileSchema = new Schema(
-  {
+const doctorProfileSchema = new Schema({
     user: {
       type: Types.ObjectId,
       ref: "User",
@@ -38,7 +37,6 @@ const doctorProfileSchema = new Schema(
       type: Boolean,
       default: true,
     },
-  },
-);
+});
 
-export default model("DoctorProfile", doctorProfileSchema);
+export default model("Doctors", doctorProfileSchema);

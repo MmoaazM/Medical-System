@@ -2,7 +2,6 @@ import mongoose, { Schema, Document , model} from 'mongoose';
 
 export type UserRole = "Patient" | "Doctor" | "Admin";
 export interface User extends Document {
-    id:string,
     name:string,
     email:string,
     password:string,
@@ -10,21 +9,25 @@ export interface User extends Document {
 }
 
 const userSchema = new Schema({
-  name: {
+  FullName: {
     type: String,
     required: true,
   },
-  email: {
+
+  Email: {
     type: String,
     required: true,
     unique: true,
   },
-  role: {
+
+  Password: {
     type: String,
     required: true,
   },
-  password: {
+  
+  Role: {
     type: String,
+    enum: ["Patient", "Doctor", "Admin"],
     required: true,
   },
 });
