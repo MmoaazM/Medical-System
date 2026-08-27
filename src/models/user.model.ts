@@ -8,6 +8,7 @@ export interface User extends Document {
     role: UserRole,
 }
 
+
 const userSchema = new Schema({
   FullName: {
     type: String,
