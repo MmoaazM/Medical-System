@@ -12,8 +12,9 @@ export function authGuard(req: Request, res: Response, next: NextFunction) {
 
     try {
         const decode = jwt.verify(token, process.env.JWT_SECRET!);
-        (req as any).User = decode;
-        next()
+        req.user = decode as any;
+        req.User = decode;
+        next();
     }
 
 

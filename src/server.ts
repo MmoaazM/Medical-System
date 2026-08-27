@@ -4,7 +4,7 @@ import connectDB from "./config/db";
 import doctorRouter from "./routes/doctorProfile.router";
 import scheduleRouter from "./routes/schedule.router";
 import doctorProfileModel from "./models/doctorProfile.model";
-import cookieParser from "cookie-parser" 
+import cookieParser from "cookie-parser"
 
 dotenv.config();
 
@@ -13,14 +13,12 @@ app.use(express.json());
 app.use(cookieParser());
 const PORT = process.env.PORT || 3000;
 
-connectDB();  
+connectDB();
 import authRoutes from "./routes/auth.router";
 import appointmentRoutes from "./routes/appointment.router";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 
-const app = express();
 dotenv.config();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api/auth", authRoutes);
@@ -30,8 +28,8 @@ app.use(errorHandler);
 connectDB();
 
 
-app.use("/doctors", doctorRouter );
-app.use("/doctors", scheduleRouter );
+app.use("/doctors", doctorRouter);
+app.use("/doctors", scheduleRouter);
 
 
 app.listen(PORT, () => {

@@ -15,7 +15,7 @@ const appointmentSchema = new Schema({
     },
     schedule:{
         type:Schema.Types.ObjectId,
-        ref:"Schedule",
+        ref:"Schedules",
         required:true
     },
     appointmentDate: {
