@@ -44,6 +44,12 @@ const appointmentSchema = new Schema({
 }
 );
 
+appointmentSchema.index(
+    { doctor: 1, appointmentDate: 1, "timeSlot.startTime": 1 },
+    { unique: true }
+);
+
+
 export type IAppointment = InferSchemaType<typeof appointmentSchema>;
 export type AppointmentDocument = HydratedDocumentFromSchema<typeof appointmentSchema>;
 
