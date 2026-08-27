@@ -78,6 +78,36 @@ export function validateDoctorUpdate( req: Request, res: Response, next: NextFun
     next();
 }
 
+export function validateTimeSlots (timeSlots: unknown): boolean {
+  if (!Array.isArray(timeSlots)) return false;
+
+  const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+  return timeSlots.every((hour) => {
+    if (typeof hour !== "object" || hour === null) return false;
+
+    const { start, end, available } = hour as {
+      start: unknown;
+      end: unknown;
+      available: unknown;
+    };
+
+    if (
+      typeof start !== "string" ||
+      typeof end !== "string" ||
+      typeof available !== "boolean"
+    ) {
+      return false;
+    }
+
+    return (
+      timeRegex.test(start) &&
+      timeRegex.test(end) &&
+      start < end
+    );
+  });
+};
+
 export function validateScheduleCreate( req: Request, res: Response, next: NextFunction ) {
     const {
         doctor,
@@ -95,8 +125,8 @@ export function validateScheduleCreate( req: Request, res: Response, next: NextF
         return res.status(400).json({ message: "All fields are required "}) ;
     }
     
-    if(!Array.isArray(availableTimeSlots)){
-        return res.status(400).json({ message: "AvailableTimeSlots must be an array "}) ;
+    if(validateTimeSlots(availableTimeSlots)){
+        return res.status(400).json({ message: "AvailableTimeSlots must be an object "}) ;
     }
     
     if(typeof availability !== "boolean" ){
@@ -117,8 +147,8 @@ export function validateScheduleUpdate( req: Request, res: Response , next: Next
         return res.status(400).json({message: "day must be a string " ,}) ;
     }
     
-    if( availableTimeSlots !== undefined && !Array.isArray(availableTimeSlots)){
-        return res.status(400).json({message: "AvailableTimeSlots must be an array " ,}) ;
+    if( availableTimeSlots !== undefined && validateTimeSlots(availableTimeSlots)){
+        return res.status(400).json({message: "AvailableTimeSlots must be an object " ,}) ;
     }
     
     if( availability !== undefined && typeof availability !== "boolean" ){
