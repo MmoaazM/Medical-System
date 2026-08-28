@@ -5,7 +5,8 @@ import appointmentModel, { AppointmentStatus } from "../models/appointment.model
 
 export async function createAppointment(req: Request, res: Response) {
     try {
-        const patientId = req.user?._id || req.user?.id || req.body.patientId;
+        const currentUser = (req as any).user || (req as any).User;
+        const patientId = currentUser?._id || currentUser?.id || req.body.patientId;
         const { doctorId, appointmentDate, timeSlot, notes } = req.body;
 
         if (!patientId) {
@@ -28,7 +29,7 @@ export async function createAppointment(req: Request, res: Response) {
             return res.status(404).json({ message: "Doctor Not Found" });
         }
         if (doctor.Role !== "Doctor") {
-            return res.status(400).json({ message: "This Person is not a doctor" })
+            return res.status(400).json({ message: "This Person is not a doctor" });
         }
 
         const patient = await userModel.findById(patientId);
@@ -39,7 +40,7 @@ export async function createAppointment(req: Request, res: Response) {
             return res.status(400).json({ message: "This Person is not a Patient" });
         }
 
-        const schedule = await scheduleModel.findOne({ doctor: doctorId, day: appointmentDate })
+        const schedule = await scheduleModel.findOne({ doctor: doctorId, day: appointmentDate });
         if (!schedule) {
             return res.status(404).json({ message: "Schedule Not Found for This Doctor on this date" });
         }
@@ -87,7 +88,8 @@ export async function createAppointment(req: Request, res: Response) {
 
 export async function getMyAppointments(req: Request, res: Response) {
     try {
-        const userId = req.user?._id || req.user?.id;
+        const currentUser = (req as any).user || (req as any).User;
+        const userId = currentUser?._id || currentUser?.id;
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized" });
         }
@@ -147,7 +149,7 @@ export async function getPatientAppointments(req: Request, res: Response) {
             appointments: patientAppointments
         });
     } catch (error) {
-        console.error(`error : ${error}`)
+        console.error(`error : ${error}`);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
@@ -171,7 +173,8 @@ export async function getAllAppointments(req: Request, res: Response) {
 export async function getAppointmentById(req: Request, res: Response) {
     try {
         const appointmentId = req.params.id;
-        const userId = req.user?._id || req.user?.id;
+        const currentUser = (req as any).user || (req as any).User;
+        const userId = currentUser?._id || currentUser?.id;
 
         const appointment = await appointmentModel.findById(appointmentId)
             .populate("doctor", "FullName Email Role")
@@ -184,7 +187,7 @@ export async function getAppointmentById(req: Request, res: Response) {
 
         const isPatient = (appointment.patient as any)?._id?.toString() === userId?.toString();
         const isDoctor = (appointment.doctor as any)?._id?.toString() === userId?.toString();
-        const isAdmin = req.user?.Role === "Admin" || req.user?.role === "Admin";
+        const isAdmin = currentUser?.Role === "Admin" || currentUser?.role === "Admin";
 
         if (!isPatient && !isDoctor && !isAdmin) {
             return res.status(403).json({ message: "You are not authorized to view this appointment" });
@@ -192,7 +195,7 @@ export async function getAppointmentById(req: Request, res: Response) {
 
         return res.status(200).json(appointment);
     } catch (error) {
-        console.error(`error : ${error}`)
+        console.error(`error : ${error}`);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
@@ -200,7 +203,8 @@ export async function getAppointmentById(req: Request, res: Response) {
 export async function cancelAppointment(req: Request, res: Response) {
     try {
         const appointmentId = req.params.id;
-        const userId = req.user?._id || req.user?.id;
+        const currentUser = (req as any).user || (req as any).User;
+        const userId = currentUser?._id || currentUser?.id;
 
         const appointment = await appointmentModel.findById(appointmentId);
         if (!appointment) {
@@ -209,7 +213,7 @@ export async function cancelAppointment(req: Request, res: Response) {
 
         const isPatient = appointment.patient.toString() === userId?.toString();
         const isDoctor = appointment.doctor.toString() === userId?.toString();
-        const isAdmin = req.user?.Role === "Admin" || req.user?.role === "Admin";
+        const isAdmin = currentUser?.Role === "Admin" || currentUser?.role === "Admin";
 
         if (!isPatient && !isDoctor && !isAdmin) {
             return res.status(403).json({ message: "You are not authorized to cancel this appointment" });
@@ -250,12 +254,12 @@ export async function cancelAppointment(req: Request, res: Response) {
     }
 }
 
-
 export async function updateAppointmentStatus(req: Request, res: Response) {
     try {
         const appointmentId = req.params.id;
         const { status, notes } = req.body;
-        const userId = req.user?._id || req.user?.id;
+        const currentUser = (req as any).user || (req as any).User;
+        const userId = currentUser?._id || currentUser?.id;
 
         const validStatuses: AppointmentStatus[] = ["Pending", "Confirmed", "Completed", "Cancelled"];
         if (status && !validStatuses.includes(status)) {
@@ -269,7 +273,7 @@ export async function updateAppointmentStatus(req: Request, res: Response) {
 
         const isPatient = appointment.patient.toString() === userId?.toString();
         const isDoctor = appointment.doctor.toString() === userId?.toString();
-        const isAdmin = req.user?.Role === "Admin" || req.user?.role === "Admin";
+        const isAdmin = currentUser?.Role === "Admin" || currentUser?.role === "Admin";
 
         if (!isPatient && !isDoctor && !isAdmin) {
             return res.status(403).json({ message: "You are not authorized to update this appointment" });
@@ -310,4 +314,3 @@ export async function updateAppointmentStatus(req: Request, res: Response) {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 }
-
