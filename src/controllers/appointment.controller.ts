@@ -36,9 +36,10 @@ export async function createAppointment(req: Request, res: Response) {
         if (!patient) {
             return res.status(404).json({ message: "Patient Not Found" });
         }
-        if (patient.Role !== "Patient" && patient.Role !== "Admin") {
-            return res.status(400).json({ message: "This Person is not a Patient" });
+        if (patient.Role !== "Patient" && patient.Role !== "Admin" && patient.Role !== "Doctor") {
+            return res.status(400).json({ message: "Invalid user role" });
         }
+
 
         let schedule = await scheduleModel.findOne({ doctor: doctorId, day: appointmentDate });
         if (!schedule) {

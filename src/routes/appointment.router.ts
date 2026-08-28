@@ -151,7 +151,8 @@ const appointmentRouter = Router();
  *       404:
  *         description: Doctor, Patient, or Schedule not found
  */
-appointmentRouter.post("/", authGuard, requireRole("Patient", "Admin"), createAppointment);
+appointmentRouter.post("/", authGuard, requireRole("Patient", "Doctor", "Admin"), createAppointment);
+
 
 /**
  * @swagger
