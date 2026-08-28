@@ -40,14 +40,23 @@ export async function createAppointment(req: Request, res: Response) {
             return res.status(400).json({ message: "This Person is not a Patient" });
         }
 
-        const schedule = await scheduleModel.findOne({ doctor: doctorId, day: appointmentDate });
+        let schedule = await scheduleModel.findOne({ doctor: doctorId, day: appointmentDate });
+        if (!schedule) {
+            const schedules = await scheduleModel.find({ doctor: doctorId });
+            schedule = schedules.find((s: any) =>
+                s.day === appointmentDate ||
+                s.availableTimeSlots.some((t: any) => (t.start === slotStart || t.startTime === slotStart) && (t.end === slotEnd || t.endTime === slotEnd))
+            ) || null;
+        }
+
         if (!schedule) {
             return res.status(404).json({ message: "Schedule Not Found for This Doctor on this date" });
         }
 
         const requiredTimeSlot: any = schedule.availableTimeSlots.find(
-            (t: any) => t.start === slotStart && t.end === slotEnd
+            (t: any) => (t.start === slotStart || t.startTime === slotStart) && (t.end === slotEnd || t.endTime === slotEnd)
         );
+
 
         if (!requiredTimeSlot) {
             return res.status(404).json({ message: "Time Slot Not Found" });
