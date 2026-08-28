@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import connectDB from "./config/db";
@@ -10,13 +13,13 @@ import scheduleRouter from "./routes/schedule.router";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 import { swaggerSpec } from "./config/swagger";
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middlewares
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Swagger Docs
@@ -26,7 +29,7 @@ app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors", doctorRouter);
-app.use("/api/doctors", scheduleRouter);
+app.use("/api/schedules", scheduleRouter);
 
 // Error Handler
 app.use(errorHandler);
@@ -39,3 +42,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
