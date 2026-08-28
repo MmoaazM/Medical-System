@@ -3,11 +3,14 @@ import {
   createAppointment,
   getMyAppointments,
   getDoctorAppointments,
+  getPatientAppointments,
   getAllAppointments,
   cancelAppointment,
   updateAppointmentStatus,
 } from "../controllers/appointment.controller";
 import { authGuard } from "../middlewares/auth.middleware";
+import { requireRole } from "../middlewares/role.middleware";
+
 
 const appointmentRouter = Router();
 
@@ -148,7 +151,7 @@ const appointmentRouter = Router();
  *       404:
  *         description: Doctor, Patient, or Schedule not found
  */
-appointmentRouter.post("/", createAppointment);
+appointmentRouter.post("/", authGuard, requireRole("Patient", "Admin"), createAppointment);
 
 /**
  * @swagger
@@ -182,7 +185,7 @@ appointmentRouter.post("/", createAppointment);
  *       404:
  *         description: Patient not found
  */
-appointmentRouter.get("/me", getMyAppointments);
+appointmentRouter.get("/me", authGuard, getMyAppointments);
 
 /**
  * @swagger
@@ -216,7 +219,7 @@ appointmentRouter.get("/me", getMyAppointments);
  *       404:
  *         description: Doctor not found
  */
-appointmentRouter.get("/doctor/:id", getDoctorAppointments);
+appointmentRouter.get("/doctor/:id", authGuard, getDoctorAppointments);
 
 /**
  * @swagger
@@ -243,7 +246,9 @@ appointmentRouter.get("/doctor/:id", getDoctorAppointments);
  *       403:
  *         description: Forbidden - Requires admin or staff privileges
  */
-appointmentRouter.get("/", getAllAppointments);
+appointmentRouter.get("/patient/:id", authGuard, requireRole("Doctor", "Admin"), getPatientAppointments);
+
+appointmentRouter.get("/", authGuard, requireRole("Admin"), getAllAppointments);
 
 /**
  * @swagger
@@ -276,7 +281,7 @@ appointmentRouter.get("/", getAllAppointments);
  *       404:
  *         description: Appointment not found
  */
-appointmentRouter.delete("/:id", cancelAppointment);
+appointmentRouter.delete("/:id", authGuard, cancelAppointment);
 
 /**
  * @swagger
@@ -327,7 +332,6 @@ appointmentRouter.delete("/:id", cancelAppointment);
  *       404:
  *         description: Appointment not found
  */
-appointmentRouter.patch("/:id", updateAppointmentStatus);
+appointmentRouter.patch("/:id", authGuard, updateAppointmentStatus);
 
 export default appointmentRouter;
-

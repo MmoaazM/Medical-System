@@ -14,28 +14,29 @@ import {
 } from "../controllers/doctorProfile.controller";
 
 const router = Router();
-router.get("/", getAllDoctors );
 
-router.get("/:id", getDoctorById );
+router.get("/", getAllDoctors);
+router.get("/:id", getDoctorById);
+
 router.delete("/:id",
   authGuard,
   requireRole("Admin"),
   deleteDoctorProfile
-)
+);
+
 router.post("/",
-  authGuard ,
-  requireRole("Admin") , 
-  validateDoctorCreate , 
+  authGuard,
+  requireRole("Admin", "Doctor"), 
+  validateDoctorCreate, 
   createDoctorProfile 
 );
 
 router.patch("/:id",
-  authGuard ,
-  requireRole("Admin", "Doctor") , 
-  validateDoctorUpdate , 
+  authGuard,
+  requireRole("Admin", "Doctor"), 
+  validateDoctorUpdate, 
   updateDoctorProfile
 );
 
-
-
 export default router;
+
