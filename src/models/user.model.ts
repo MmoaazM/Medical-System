@@ -1,13 +1,13 @@
-import mongoose, { Schema, Document , model} from 'mongoose';
+import mongoose, { Schema, Document, model } from 'mongoose';
 
 export type UserRole = "Patient" | "Doctor" | "Admin";
-export interface User extends Document {
-    name:string,
-    email:string,
-    password:string,
-    role: UserRole,
-}
 
+export interface User extends Document {
+    FullName: string;
+    Email: string;
+    Password: string;
+    Role: UserRole;
+}
 
 const userSchema = new Schema({
   FullName: {
@@ -33,4 +33,4 @@ const userSchema = new Schema({
   },
 });
 
-export default model("User", userSchema);
+export default model<User>("User", userSchema);
